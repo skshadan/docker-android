@@ -10,6 +10,9 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt update -y && \
   apt install -y --no-install-recommends \
   bash \
+  curl \
+  ca-certificates \
+  gnupg \
   unzip \
   wget \
   libvirt-daemon \
@@ -24,11 +27,15 @@ RUN apt update -y && \
   htop \
   iproute2 \
   git \
-  nodejs \
-  npm \
   python3 \
   make \
   g++ && \
+  rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+  apt install -y nodejs && \
+  node --version && \
+  npm --version && \
   rm -rf /var/lib/apt/lists/*
 
 # Arguments that can be overriden at build-time.
