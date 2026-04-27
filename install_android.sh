@@ -56,19 +56,21 @@ fi
 git clone $REPO_URL
 cd $DIR_NAME
 
-# 5. FIX BASE IMAGE ISSUE (Important)
-echo -e "${GREEN}[4/6] Patching 'openjdk:21-jdk-slim' issue in Dockerfile...${NC}"
-# Replacing the problematic base image with eclipse-temurin
+# 5. Ensure base image is available
+echo -e "${GREEN}[4/6] Ensuring Dockerfile uses an available JDK base image...${NC}"
 sed -i 's/^FROM openjdk:21-jdk-slim/FROM eclipse-temurin:21-jdk-jammy/' Dockerfile
-echo "Dockerfile patched successfully."
+echo "Dockerfile base image is ready."
 
 # 6. Build and Run Container
 echo -e "${GREEN}[5/6] Building and Starting Container (This may take 5-10 minutes)...${NC}"
+SERVER_IP=$(hostname -I | awk '{print $1}')
+LIVE_URL="http://$SERVER_IP:8000/"
+
 # Check for docker compose v2 or legacy docker-compose v1
 if docker compose version &> /dev/null; then
-    docker compose up -d --build android-emulator
+    SCRCPY_WEB_BIND=0.0.0.0 SCRCPY_WEB_PUBLIC_URL="$LIVE_URL" docker compose up -d --build android-emulator
 elif docker-compose version &> /dev/null; then
-    docker-compose up -d --build android-emulator
+    SCRCPY_WEB_BIND=0.0.0.0 SCRCPY_WEB_PUBLIC_URL="$LIVE_URL" docker-compose up -d --build android-emulator
 else
     echo -e "${RED}[ERROR] 'docker compose' command not found. Please check your Docker installation.${NC}"
     exit 1
@@ -79,17 +81,19 @@ echo -e "${GREEN}[6/6] Checking status...${NC}"
 sleep 5 # Wait a moment for container initialization
 
 if docker ps | grep -q "android-emulator"; then
-    SERVER_IP=$(hostname -I | awk '{print $1}')
     echo -e "\n${GREEN}=== INSTALLATION COMPLETED SUCCESSFULLY ===${NC}"
     echo -e "The container is running. Connection details:"
     echo "---------------------------------------------------"
     echo -e "Server IP (Ubuntu):  ${GREEN}$SERVER_IP${NC}"
     echo -e "ADB Port:            ${GREEN}5555${NC}"
+    echo -e "Scrcpy Live URL:     ${GREEN}$LIVE_URL${NC}"
     echo "---------------------------------------------------"
     echo -e ">>> Connection command for WINDOWS (CMD/Powershell):"
     echo -e "${GREEN}adb connect $SERVER_IP:5555${NC}"
     echo -e ">>> Scrcpy command (Screen Mirroring):"
     echo -e "${GREEN}scrcpy -s $SERVER_IP:5555${NC}"
+    echo -e ">>> Browser Scrcpy:"
+    echo -e "${GREEN}$LIVE_URL${NC}"
     echo "---------------------------------------------------"
 else
     echo -e "${RED}[ERROR] Container is not running. Check logs using: docker logs android-emulator${NC}"

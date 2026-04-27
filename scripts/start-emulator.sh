@@ -12,6 +12,58 @@ OPT_MEMORY=${MEMORY:-8192}
 OPT_CORES=${CORES:-4}
 OPT_SKIP_AUTH=${SKIP_AUTH:-true}
 AUTH_FLAG=
+
+function normalize_web_path() {
+  local path="${1:-/}"
+
+  if [ -z "$path" ]; then
+    path="/"
+  fi
+
+  case "$path" in
+    /*) ;;
+    *) path="/$path" ;;
+  esac
+
+  echo "$path"
+}
+
+function start_ws_scrcpy() {
+  if [ "${SCRCPY_WEB_ENABLED:-false}" != "true" ]; then
+    return
+  fi
+
+  local web_port="${SCRCPY_WEB_PORT:-8000}"
+  local web_path
+  web_path=$(normalize_web_path "$SCRCPY_WEB_PATH")
+  local public_url="${SCRCPY_WEB_PUBLIC_URL:-http://localhost:${web_port}${web_path}}"
+  local config_path="/tmp/ws-scrcpy-config.yaml"
+
+  cat > "$config_path" <<EOF
+runGoogTracker: true
+announceGoogTracker: true
+runApplTracker: false
+announceApplTracker: false
+server:
+  - secure: false
+    port: ${web_port}
+remoteHostList: []
+EOF
+
+  echo "Starting ws-scrcpy web UI ..."
+  echo "SCRCPY WEB URL - $public_url"
+  write_log "live-url" "$public_url"
+
+  (
+    cd /opt/ws-scrcpy/dist
+    export WS_SCRCPY_CONFIG="$config_path"
+    export WS_SCRCPY_PATHNAME="$web_path"
+    export ADB_HOST="${SCRCPY_ADB_HOST:-127.0.0.1}"
+    export ADB_PORT="${SCRCPY_ADB_PORT:-5037}"
+    node ./index.js
+  ) &
+}
+
 # Start ADB server by listening on all interfaces.
 echo "Starting the ADB server ..."
 adb -a -P 5037 server nodaemon &
@@ -21,6 +73,8 @@ adb -a -P 5037 server nodaemon &
 LOCAL_IP=$(ip addr list eth0 | grep "inet " | cut -d' ' -f6 | cut -d/ -f1)
 socat tcp-listen:"$EMULATOR_CONSOLE_PORT",bind="$LOCAL_IP",fork tcp:127.0.0.1:"$EMULATOR_CONSOLE_PORT" &
 socat tcp-listen:"$ADB_PORT",bind="$LOCAL_IP",fork tcp:127.0.0.1:"$ADB_PORT" &
+
+start_ws_scrcpy
 
 export USER=root
 

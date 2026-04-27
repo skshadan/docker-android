@@ -26,7 +26,7 @@ Current version: **1.1.0**
 - Customizable Android version, device type and image types.
 - Port-forwarding of emulator and ADB on the container network interface built-in.
 - Emulator images are wiped each time the emulator re-starts.
-- Runs headless, suitable for CI farms. Compatible with [`scrcpy`](https://github.com/Genymobile/scrcpy) to remotely control the Android screen.
+- Runs headless, suitable for CI farms. Compatible with local [`scrcpy`](https://github.com/Genymobile/scrcpy) and bundled [`ws-scrcpy`](https://github.com/NetrisTV/ws-scrcpy) for browser-based control.
 
 ## 🔰 Description
 
@@ -49,6 +49,14 @@ with docker-compose:
 
 ```bash
 docker compose up android-emulator
+```
+
+On Apple Silicon Macs, the compose services force `linux/amd64` because Google's Linux Android emulator package is not published for `linux/arm64`.
+
+When using the included compose services, the browser-based scrcpy UI is available at:
+
+```text
+http://localhost:8000/
 ```
 
 or with GPU acceleration
@@ -83,7 +91,7 @@ Once the image is built, you can mount your KVM driver on the container and expo
 > Ensure 4GB of memory and at least 8GB of disk space for API 33.
 
 ```bash
-docker run -it --rm --device /dev/kvm -p 5555:5555 android-emulator
+docker run -it --rm --device /dev/kvm -p 5555:5555 -p 8000:8000 -e SCRCPY_WEB_ENABLED=true android-emulator
 ```
 
 ### Save data/storage after restart (wipe)
@@ -108,6 +116,38 @@ Additionally, you can use [`scrcpy`](https://github.com/Genymobile/scrcpy) to co
 
 ```bash
 scrcpy
+```
+
+### Browser scrcpy live URL
+
+The image also bundles `ws-scrcpy` for controlling the emulator from a browser. Enable it with `SCRCPY_WEB_ENABLED=true` and publish `SCRCPY_WEB_PORT` from the container.
+
+```bash
+docker run -it --rm --device /dev/kvm \
+  -p 5555:5555 \
+  -p 8000:8000 \
+  -e SCRCPY_WEB_ENABLED=true \
+  android-emulator
+```
+
+The default live URL is:
+
+```text
+http://localhost:8000/
+```
+
+Startup logs also include a structured live URL event:
+
+```json
+{ "type": "live-url", "value": "http://localhost:8000/" }
+```
+
+If the container is running on a remote host, set `SCRCPY_WEB_PUBLIC_URL` to the externally reachable URL so the printed live URL is accurate.
+
+For docker compose on a remote host, also set `SCRCPY_WEB_BIND=0.0.0.0` to publish the web UI outside localhost:
+
+```bash
+SCRCPY_WEB_BIND=0.0.0.0 SCRCPY_WEB_PUBLIC_URL=http://SERVER_IP:8000/ docker compose up android-emulator
 ```
 
 <br />
@@ -168,6 +208,18 @@ CORES=4
 
 #### Extra flags to emulator
 EXTRA_FLAGS="-no-metrics -no-audio -partition-size=8192"
+
+#### Enable browser scrcpy
+SCRCPY_WEB_ENABLED=false
+
+#### Browser scrcpy port
+SCRCPY_WEB_PORT=8000
+
+#### Browser scrcpy path
+SCRCPY_WEB_PATH=/
+
+#### Public browser scrcpy URL printed in logs
+SCRCPY_WEB_PUBLIC_URL=http://localhost:8000/
 
 ### Mount an external drive in the container
 

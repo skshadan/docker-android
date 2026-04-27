@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk-slim
+FROM --platform=linux/amd64 eclipse-temurin:21-jdk-jammy
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -13,7 +13,7 @@ RUN apt update && apt install -y curl \
 	libxkbcommon-dev libgbm-dev libasound-dev libnss3 \
 	libxcursor1 libpulse-dev libxshmfence-dev \
 	xauth xvfb x11vnc fluxbox wmctrl libdbus-glib-1-2 socat \
-	virt-manager
+	virt-manager git nodejs npm python3 make g++
 
 
 # Docker labels.
@@ -30,6 +30,7 @@ ARG ARCHITECTURE=x86_64
 ARG CMD_LINE_VERSION=9477386_latest
 ARG DEVICE_ID=pixel
 ARG GPU_ACCELERATED=false
+ARG WS_SCRCPY_REF=master
 
 # Environment variables.
 ENV ANDROID_SDK_ROOT=/opt/android \
@@ -42,7 +43,10 @@ ENV ANDROID_SDK_ROOT=/opt/android \
 	GPU_ACCELERATED=$GPU_ACCELERATED \
 	QTWEBENGINE_DISABLE_SANDBOX=1 \
 	ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL=10 \
-	ANDROID_AVD_HOME=/data
+	ANDROID_AVD_HOME=/data \
+	SCRCPY_WEB_ENABLED=false \
+	SCRCPY_WEB_PORT=8000 \
+	SCRCPY_WEB_PATH=/
 
 # Exporting environment variables to keep in the path
 # Android SDK binaries and shared libraries.
@@ -54,9 +58,9 @@ ENV LD_LIBRARY_PATH "$ANDROID_SDK_ROOT/emulator/lib64:$ANDROID_SDK_ROOT/emulator
 # Set the working directory to /opt
 WORKDIR /opt
 
-# Exposing the Android emulator console port
-# and the ADB port.
-EXPOSE 5554 5555
+# Exposing the Android emulator console port, the ADB port,
+# and the optional ws-scrcpy web UI port.
+EXPOSE 5554 5555 8000
 
 # Initializing the required directories.
 RUN mkdir /root/.android/ && \
@@ -72,6 +76,32 @@ COPY keys/* /root/.android/
 COPY scripts/install-sdk.sh /opt/
 RUN chmod +x /opt/install-sdk.sh
 RUN /opt/install-sdk.sh
+
+# Install ws-scrcpy for optional browser-based screen mirroring.
+RUN git clone https://github.com/NetrisTV/ws-scrcpy.git /opt/ws-scrcpy && \
+	cd /opt/ws-scrcpy && \
+	git checkout "$WS_SCRCPY_REF" && \
+	printf '%s\n' \
+		'{' \
+		'  "INCLUDE_APPL": false,' \
+		'  "INCLUDE_GOOG": true,' \
+		'  "INCLUDE_ADB_SHELL": true,' \
+		'  "INCLUDE_DEV_TOOLS": false,' \
+		'  "INCLUDE_FILE_LISTING": true,' \
+		'  "USE_BROADWAY": false,' \
+		'  "USE_H264_CONVERTER": true,' \
+		'  "USE_TINY_H264": false,' \
+		'  "USE_WEBCODECS": true,' \
+		'  "USE_WDA_MJPEG_SERVER": false,' \
+		'  "USE_QVH_SERVER": false,' \
+		'  "SCRCPY_LISTENS_ON_ALL_INTERFACES": false' \
+		'}' > build.config.override.json && \
+	npm install && \
+	npm run dist && \
+	cd dist && \
+	npm install --omit=dev && \
+	cd /opt && \
+	rm -rf /opt/ws-scrcpy/node_modules /root/.npm
 
 # Copy the container scripts in the image.
 COPY scripts/start-emulator.sh /opt/
