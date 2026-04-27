@@ -8,6 +8,7 @@ source ./emulator-monitoring.sh
 EMULATOR_CONSOLE_PORT=5554
 # The ADB port used to connect to ADB.
 ADB_PORT=5555
+OPT_AVD_HOME=${ANDROID_AVD_HOME:-/data}
 OPT_MEMORY=${MEMORY:-8192}
 OPT_CORES=${CORES:-4}
 OPT_SKIP_AUTH=${SKIP_AUTH:-true}
@@ -84,9 +85,11 @@ socat tcp-listen:"$EMULATOR_CONSOLE_PORT",bind="$LOCAL_IP",fork tcp:127.0.0.1:"$
 socat tcp-listen:"$ADB_PORT",bind="$LOCAL_IP",fork tcp:127.0.0.1:"$ADB_PORT" &
 
 export USER=root
+export ANDROID_AVD_HOME="$OPT_AVD_HOME"
 
 rm -rf /root/.android/avd/running
 find "$ANDROID_AVD_HOME" -name "*.lock" -delete 2>/dev/null || true
+find "$ANDROID_AVD_HOME" -name "hardware-qemu.ini" -delete 2>/dev/null || true
 
 # Creating the Android Virtual Emulator.
 TEST_AVD=$(avdmanager list avd | grep -c "android.avd" || true)
