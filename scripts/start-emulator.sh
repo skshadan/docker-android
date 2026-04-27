@@ -84,6 +84,9 @@ socat tcp-listen:"$ADB_PORT",bind="$LOCAL_IP",fork tcp:127.0.0.1:"$ADB_PORT" &
 
 export USER=root
 
+rm -rf /root/.android/avd/running
+find "$ANDROID_AVD_HOME" -name "*.lock" -delete 2>/dev/null || true
+
 # Creating the Android Virtual Emulator.
 TEST_AVD=$(avdmanager list avd | grep -c "android.avd" || true)
 if [ "$TEST_AVD" == "1" ]; then
