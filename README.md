@@ -201,10 +201,10 @@ DISABLE_HIDDEN_POLICY=false
 SKIP_AUTH=true
 
 #### Memory for emulator
-MEMORY=8192
+MEMORY=4096
 
 #### Cores for emulator
-CORES=4
+CORES=2
 
 #### Extra flags to emulator
 EXTRA_FLAGS="-no-metrics -no-audio -partition-size=8192"

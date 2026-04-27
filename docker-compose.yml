@@ -3,7 +3,7 @@ services:
     build:
       context: .
       args:
-        - API_LEVEL=34
+        - API_LEVEL=33
         - CMD_LINE_VERSION=11076708_latest
         - IMG_TYPE=google_apis
     ports:
@@ -18,8 +18,8 @@ services:
       - SCRCPY_WEB_PORT=8000
       - SCRCPY_WEB_PUBLIC_URL=${SCRCPY_WEB_PUBLIC_URL:-http://localhost:8000/}
       #- ANDROID_ADB_SERVER_ADDRESS=host.docker.internal
-      - MEMORY=16384
-      - CORES=16
+      - MEMORY=4096
+      - CORES=2
     privileged: true
     tty: true
     stdin_open: true
@@ -35,7 +35,7 @@ services:
       context: .
       dockerfile: ./Dockerfile.gpu
       args:
-        - API_LEVEL=34
+        - API_LEVEL=33
         - CMD_LINE_VERSION=11076708_latest
         - IMG_TYPE=google_apis
     ports:
@@ -50,8 +50,8 @@ services:
       - SCRCPY_WEB_PORT=8000
       - SCRCPY_WEB_PUBLIC_URL=${SCRCPY_WEB_PUBLIC_URL:-http://localhost:8000/}
       #- ANDROID_ADB_SERVER_ADDRESS=host.docker.internal
-      - MEMORY=16384
-      - CORES=16
+      - MEMORY=4096
+      - CORES=2
     privileged: true
     tty: true
     stdin_open: true
@@ -73,7 +73,7 @@ services:
       context: .
       dockerfile: ./Dockerfile.gpu
       args:
-        - API_LEVEL=34
+        - API_LEVEL=33
         - CMD_LINE_VERSION=11076708_latest
         - IMG_TYPE=google_apis_playstore
     ports:
@@ -88,8 +88,8 @@ services:
       - SCRCPY_WEB_PORT=8000
       - SCRCPY_WEB_PUBLIC_URL=${SCRCPY_WEB_PUBLIC_URL:-http://localhost:8000/}
       #- ANDROID_ADB_SERVER_ADDRESS=host.docker.internal
-      - MEMORY=16384
-      - CORES=16
+      - MEMORY=4096
+      - CORES=2
     privileged: true
     tty: true
     stdin_open: true
