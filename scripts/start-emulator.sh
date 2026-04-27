@@ -11,7 +11,10 @@ ADB_PORT=5555
 OPT_MEMORY=${MEMORY:-8192}
 OPT_CORES=${CORES:-4}
 OPT_SKIP_AUTH=${SKIP_AUTH:-true}
+OPT_SNAPSHOT=${SNAPSHOT:-true}
+OPT_SCREEN_SIZE=${SCREEN_SIZE:-720x1280}
 AUTH_FLAG=
+SNAPSHOT_FLAGS=()
 
 function normalize_web_path() {
   local path="${1:-/}"
@@ -97,6 +100,12 @@ if [ "$OPT_SKIP_AUTH" == "true" ]; then
   AUTH_FLAG="-skip-adb-auth"
 fi
 
+if [ "$OPT_SNAPSHOT" == "true" ]; then
+  SNAPSHOT_FLAGS=(-no-snapshot-save)
+else
+  SNAPSHOT_FLAGS=(-no-snapshot)
+fi
+
 # If GPU acceleration is enabled, we create a virtual framebuffer
 # to be used by the emulator when running with GPU acceleration.
 # We also set the GPU mode to `host` to force the emulator to use
@@ -120,16 +129,21 @@ echo "SKIP ADB AUTH - $OPT_SKIP_AUTH"
 echo "GPU           - $GPU_MODE"
 echo "MEMORY        - $OPT_MEMORY"
 echo "CORES         - $OPT_CORES"
+echo "SNAPSHOT      - $OPT_SNAPSHOT"
+echo "SCREEN SIZE   - $OPT_SCREEN_SIZE"
 emulator \
   -avd android \
   -gpu "$GPU_MODE" \
   -memory "$OPT_MEMORY" \
   -no-boot-anim \
+  -no-audio \
+  -no-metrics \
   -cores "$OPT_CORES" \
   -ranchu \
   $AUTH_FLAG \
   -no-window \
-  -no-snapshot \
+  -skin "$OPT_SCREEN_SIZE" \
+  "${SNAPSHOT_FLAGS[@]}" \
   $EXTRA_FLAGS || update_state "ANDROID_STOPPED"
 
 

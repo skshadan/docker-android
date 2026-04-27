@@ -13,13 +13,15 @@ services:
     environment:
       - DISABLE_ANIMATION=false
       - DISABLE_HIDDEN_POLICY=true
-      - SKIP_AUTH=false
+      - SKIP_AUTH=true
       - SCRCPY_WEB_ENABLED=true
       - SCRCPY_WEB_PORT=8000
       - SCRCPY_WEB_PUBLIC_URL=${SCRCPY_WEB_PUBLIC_URL:-http://localhost:8000/}
       #- ANDROID_ADB_SERVER_ADDRESS=host.docker.internal
-      - MEMORY=4096
-      - CORES=2
+      - MEMORY=6144
+      - CORES=4
+      - SCREEN_SIZE=720x1280
+      - SNAPSHOT=true
     privileged: true
     tty: true
     stdin_open: true
@@ -45,13 +47,15 @@ services:
     environment:
       - DISABLE_ANIMATION=false
       - DISABLE_HIDDEN_POLICY=true
-      - SKIP_AUTH=false
+      - SKIP_AUTH=true
       - SCRCPY_WEB_ENABLED=true
       - SCRCPY_WEB_PORT=8000
       - SCRCPY_WEB_PUBLIC_URL=${SCRCPY_WEB_PUBLIC_URL:-http://localhost:8000/}
       #- ANDROID_ADB_SERVER_ADDRESS=host.docker.internal
-      - MEMORY=4096
-      - CORES=2
+      - MEMORY=6144
+      - CORES=4
+      - SCREEN_SIZE=720x1280
+      - SNAPSHOT=true
     privileged: true
     tty: true
     stdin_open: true
@@ -83,13 +87,15 @@ services:
     environment:
       - DISABLE_ANIMATION=false
       - DISABLE_HIDDEN_POLICY=true
-      - SKIP_AUTH=false
+      - SKIP_AUTH=true
       - SCRCPY_WEB_ENABLED=true
       - SCRCPY_WEB_PORT=8000
       - SCRCPY_WEB_PUBLIC_URL=${SCRCPY_WEB_PUBLIC_URL:-http://localhost:8000/}
       #- ANDROID_ADB_SERVER_ADDRESS=host.docker.internal
-      - MEMORY=4096
-      - CORES=2
+      - MEMORY=6144
+      - CORES=4
+      - SCREEN_SIZE=720x1280
+      - SNAPSHOT=true
     privileged: true
     tty: true
     stdin_open: true

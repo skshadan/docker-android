@@ -201,13 +201,37 @@ DISABLE_HIDDEN_POLICY=false
 SKIP_AUTH=true
 
 #### Memory for emulator
-MEMORY=4096
+MEMORY=6144
 
 #### Cores for emulator
-CORES=2
+CORES=4
+
+#### Screen size
+SCREEN_SIZE=720x1280
+
+#### Enable emulator snapshots
+SNAPSHOT=true
 
 #### Extra flags to emulator
 EXTRA_FLAGS="-no-metrics -no-audio -partition-size=8192"
+
+### Root access
+
+The default `google_apis` emulator image may support ADB root depending on the system image. After the emulator is ready, test root with:
+
+```bash
+adb connect 127.0.0.1:5555
+adb root
+adb shell whoami
+```
+
+If `whoami` returns `root`, the session has root shell access. Play Store images are usually more locked down and are not recommended when root is required.
+
+For a rooted official AVD, tools such as [`rootAVD`](https://gitlab.com/newbit/rootAVD) can patch Android Studio/QEMU AVDs, but this adds build/runtime complexity and should be tested against the exact API/system image you plan to run.
+
+### Performance tuning
+
+For smoother browser sessions, the compose defaults use a smaller `720x1280` display, `6144` MB memory, `4` cores, no audio, no metrics, and emulator snapshots. The first boot is still a full cold boot; later boots can be faster when `/data` is persisted.
 
 #### Enable browser scrcpy
 SCRCPY_WEB_ENABLED=false
