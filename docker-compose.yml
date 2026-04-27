@@ -20,7 +20,6 @@ services:
       #- ANDROID_ADB_SERVER_ADDRESS=host.docker.internal
       - MEMORY=6144
       - CORES=4
-      - SCREEN_SIZE=720x1280
       - SNAPSHOT=true
     privileged: true
     tty: true
@@ -54,7 +53,6 @@ services:
       #- ANDROID_ADB_SERVER_ADDRESS=host.docker.internal
       - MEMORY=6144
       - CORES=4
-      - SCREEN_SIZE=720x1280
       - SNAPSHOT=true
     privileged: true
     tty: true
@@ -94,7 +92,6 @@ services:
       #- ANDROID_ADB_SERVER_ADDRESS=host.docker.internal
       - MEMORY=6144
       - CORES=4
-      - SCREEN_SIZE=720x1280
       - SNAPSHOT=true
     privileged: true
     tty: true

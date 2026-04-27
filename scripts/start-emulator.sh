@@ -12,9 +12,10 @@ OPT_MEMORY=${MEMORY:-8192}
 OPT_CORES=${CORES:-4}
 OPT_SKIP_AUTH=${SKIP_AUTH:-true}
 OPT_SNAPSHOT=${SNAPSHOT:-true}
-OPT_SCREEN_SIZE=${SCREEN_SIZE:-720x1280}
+OPT_SCREEN_SIZE=${SCREEN_SIZE:-}
 AUTH_FLAG=
 SNAPSHOT_FLAGS=()
+SCREEN_SIZE_FLAGS=()
 
 function normalize_web_path() {
   local path="${1:-/}"
@@ -112,6 +113,10 @@ else
   SNAPSHOT_FLAGS=(-no-snapshot)
 fi
 
+if [ -n "$OPT_SCREEN_SIZE" ]; then
+  SCREEN_SIZE_FLAGS=(-skin "$OPT_SCREEN_SIZE")
+fi
+
 # If GPU acceleration is enabled, we create a virtual framebuffer
 # to be used by the emulator when running with GPU acceleration.
 # We also set the GPU mode to `host` to force the emulator to use
@@ -136,7 +141,7 @@ echo "GPU           - $GPU_MODE"
 echo "MEMORY        - $OPT_MEMORY"
 echo "CORES         - $OPT_CORES"
 echo "SNAPSHOT      - $OPT_SNAPSHOT"
-echo "SCREEN SIZE   - $OPT_SCREEN_SIZE"
+echo "SCREEN SIZE   - ${OPT_SCREEN_SIZE:-default}"
 emulator \
   -avd android \
   -gpu "$GPU_MODE" \
@@ -148,7 +153,7 @@ emulator \
   -ranchu \
   $AUTH_FLAG \
   -no-window \
-  -skin "$OPT_SCREEN_SIZE" \
+  "${SCREEN_SIZE_FLAGS[@]}" \
   "${SNAPSHOT_FLAGS[@]}" \
   $EXTRA_FLAGS || update_state "ANDROID_STOPPED"
 

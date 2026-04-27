@@ -225,9 +225,6 @@ MEMORY=6144
 #### Cores for emulator
 CORES=4
 
-#### Screen size
-SCREEN_SIZE=720x1280
-
 #### Enable emulator snapshots
 SNAPSHOT=true
 
