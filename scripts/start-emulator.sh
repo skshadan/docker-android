@@ -67,6 +67,11 @@ EOF
   ) &
 }
 
+function wait_for_boot_and_start_ws_scrcpy() {
+  wait_for_boot
+  start_ws_scrcpy
+}
+
 # Start ADB server by listening on all interfaces.
 echo "Starting the ADB server ..."
 adb -a -P 5037 server nodaemon &
@@ -76,8 +81,6 @@ adb -a -P 5037 server nodaemon &
 LOCAL_IP=$(ip addr list eth0 | grep "inet " | cut -d' ' -f6 | cut -d/ -f1)
 socat tcp-listen:"$EMULATOR_CONSOLE_PORT",bind="$LOCAL_IP",fork tcp:127.0.0.1:"$EMULATOR_CONSOLE_PORT" &
 socat tcp-listen:"$ADB_PORT",bind="$LOCAL_IP",fork tcp:127.0.0.1:"$ADB_PORT" &
-
-start_ws_scrcpy
 
 export USER=root
 
@@ -120,7 +123,7 @@ fi
 
 # Asynchronously write updates on the standard output
 # about the state of the boot sequence.
-wait_for_boot &
+wait_for_boot_and_start_ws_scrcpy &
 
 # Start the emulator with no audio, no GUI, and no snapshots.
 echo "Starting the emulator ..."
