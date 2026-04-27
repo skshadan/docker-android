@@ -15,7 +15,7 @@ services:
       - SCRCPY_WEB_PUBLIC_URL=${SCRCPY_WEB_PUBLIC_URL:-http://localhost:8000/}
       - MEMORY=${MEMORY:-6144}
       - CORES=${CORES:-4}
-      - SCREEN_SIZE=${SCREEN_SIZE:-720x1280}
+      - SCREEN_SIZE=${SCREEN_SIZE:-432x768}
       - SNAPSHOT=${SNAPSHOT:-false}
     privileged: true
     tty: true

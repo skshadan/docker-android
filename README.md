@@ -162,6 +162,7 @@ docker compose -f docker-compose.rooted.yml up -d android-emulator
 ```
 
 The rooted runtime does not mount `/data` from the host. The rooted Android state is part of the image, so starting the rooted compose file should use the baked image directly.
+It defaults to a smaller `432x768` screen for a compact browser stream. Override it with `SCREEN_SIZE=720x1280` if you need a larger display.
 
 For ECR, set `ANDROID_ROOTED_IMAGE` to the full ECR image URL:
 
