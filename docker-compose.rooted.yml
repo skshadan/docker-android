@@ -1,0 +1,28 @@
+services:
+  android-emulator:
+    platform: linux/amd64
+    image: ${ANDROID_ROOTED_IMAGE:-docker-android-rooted:api33-magisk}
+    ports:
+      - 5554:5554
+      - ${ADB_BIND:-127.0.0.1}:5555:5555
+      - ${SCRCPY_WEB_BIND:-127.0.0.1}:8000:8000
+    environment:
+      - DISABLE_ANIMATION=false
+      - DISABLE_HIDDEN_POLICY=true
+      - SKIP_AUTH=true
+      - SCRCPY_WEB_ENABLED=true
+      - SCRCPY_WEB_PORT=8000
+      - SCRCPY_WEB_PUBLIC_URL=${SCRCPY_WEB_PUBLIC_URL:-http://localhost:8000/}
+      - MEMORY=${MEMORY:-6144}
+      - CORES=${CORES:-4}
+      - SCREEN_SIZE=${SCREEN_SIZE:-720x1280}
+      - SNAPSHOT=${SNAPSHOT:-true}
+    privileged: true
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./keys/adbkey:/root/.android/adbkey:ro
+      - ./keys/adbkey.pub:/root/.android/adbkey.pub:ro
+      - ./android_avd:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

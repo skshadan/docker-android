@@ -150,6 +150,23 @@ For docker compose on a remote host, also set `SCRCPY_WEB_BIND=0.0.0.0` to publi
 SCRCPY_WEB_BIND=0.0.0.0 SCRCPY_WEB_PUBLIC_URL=http://SERVER_IP:8000/ docker compose up android-emulator
 ```
 
+### Run a rooted image
+
+After creating a Magisk/rootAVD-patched image, run it with the rooted compose file:
+
+```bash
+ANDROID_ROOTED_IMAGE=docker-android-rooted:api33-magisk \
+SCRCPY_WEB_BIND=0.0.0.0 \
+SCRCPY_WEB_PUBLIC_URL=http://SERVER_IP:8000/ \
+docker compose -f docker-compose.rooted.yml up -d android-emulator
+```
+
+For ECR, set `ANDROID_ROOTED_IMAGE` to the full ECR image URL:
+
+```bash
+ANDROID_ROOTED_IMAGE=ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/docker-android-rooted:api33-magisk
+```
+
 <br />
 <table>
   <tr>
