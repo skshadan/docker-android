@@ -161,6 +161,8 @@ SCRCPY_WEB_PUBLIC_URL=http://SERVER_IP:8000/ \
 docker compose -f docker-compose.rooted.yml up -d android-emulator
 ```
 
+The rooted runtime disables emulator snapshots by default to avoid reusing stale AVD state across hosts. For a completely fresh device, remove `./android_avd` before starting the rooted compose file.
+
 For ECR, set `ANDROID_ROOTED_IMAGE` to the full ECR image URL:
 
 ```bash

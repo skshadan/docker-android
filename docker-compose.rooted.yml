@@ -16,7 +16,7 @@ services:
       - MEMORY=${MEMORY:-6144}
       - CORES=${CORES:-4}
       - SCREEN_SIZE=${SCREEN_SIZE:-720x1280}
-      - SNAPSHOT=${SNAPSHOT:-true}
+      - SNAPSHOT=${SNAPSHOT:-false}
     privileged: true
     tty: true
     stdin_open: true
